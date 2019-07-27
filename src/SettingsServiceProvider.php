@@ -17,8 +17,12 @@ class SettingsServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->mergeConfigFrom(
+            __DIR__.'/config.php',
+            'settings'
+        );
         $this->app->singleton('settings', function () {
-            return Valuestore::make(storage_path('app/settings.json'));
+            return JsonObject::init(config('settings.filename'));
         });
     }
 
@@ -29,6 +33,9 @@ class SettingsServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->publishes([
+            __DIR__.'/config.php' => config_path('settings.php'),
+        ]);
         $this->commands([
             SettingsGet::class,
             SettingsSet::class,
